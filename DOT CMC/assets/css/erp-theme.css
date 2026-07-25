@@ -1,0 +1,143 @@
+/* Modern ERP Theme for DOT CMC */
+:root {
+  --primary-navy: #2A3441;
+  --primary-light: #3a4759;
+  --bg-light: #f4f6f9;
+  --border-color: #e3e6f0;
+  --text-main: #333333;
+  --text-muted: #858796;
+}
+
+body {
+  background-color: var(--bg-light) !important;
+  font-family: 'Open Sans', 'Inter', sans-serif !important;
+  color: var(--text-main);
+}
+
+/* Typography & General */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--primary-navy);
+}
+
+/* Sidebar (Navbar) */
+#sidebar {
+  background-color: var(--primary-navy) !important;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+#sidebar .sidebar-list a {
+  color: #d1d3e2 !important;
+  font-weight: 500;
+  padding: 12px 20px;
+  border-left: 4px solid transparent !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease-in-out;
+}
+
+#sidebar .sidebar-list a:hover {
+  background-color: var(--primary-light) !important;
+  color: #fff !important;
+}
+
+#sidebar .sidebar-list a.active {
+  background-color: var(--primary-light) !important;
+  color: #fff !important;
+  border-left: 4px solid #fff;
+}
+
+/* Topbar */
+#topbar {
+  background-color: #ffffff !important;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Cards (Traditional Enterprise Style) */
+.card {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  background-color: #ffffff !important;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  background-color: #f8f9fc !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  font-weight: 600;
+  color: var(--primary-navy);
+  padding: 15px 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* Tables */
+table.table {
+  color: var(--text-main);
+  border-collapse: collapse;
+}
+
+table.table th {
+  border-top: none !important;
+  border-bottom: 2px solid var(--border-color) !important;
+  font-weight: 600;
+  color: var(--primary-navy);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+table.table td {
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 4px !important;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--primary-navy) !important;
+  border-color: var(--primary-navy) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-light) !important;
+  border-color: var(--primary-light) !important;
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 4px !important;
+  border: 1px solid #d1d3e2;
+}
+
+.form-control:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 0.2rem rgba(42, 52, 65, 0.25);
+}
+
+/* KPI Dashboard Cards */
+.kpi-card {
+  border-left: 4px solid var(--primary-navy) !important;
+}
+.kpi-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
