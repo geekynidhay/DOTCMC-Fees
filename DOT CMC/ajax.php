@@ -116,5 +116,10 @@ if($action == "delete_payment"){
 	if($delete)
 		echo $delete;
 }
+if($action == "get_course_fees"){
+	$get = $crud->get_course_fees();
+	if($get)
+		echo $get;
+}
 ob_end_flush();
 ?>

@@ -634,4 +634,14 @@ Class Action {
 			return 1;
 		}
 	}
+	function get_course_fees(){
+		extract($_POST);
+		$course = $this->db->real_escape_string($course_name);
+		$qry = $this->db->query("SELECT * FROM courses where course = '$course' order by level asc");
+		$data = array();
+		while($row = $qry->fetch_assoc()){
+			$data[] = $row;
+		}
+		return json_encode($data);
+	}
 }
