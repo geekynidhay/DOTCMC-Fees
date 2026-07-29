@@ -249,33 +249,120 @@ Class Action {
 	function save_student(){
 		foreach($_POST as $k => $v){ if(!is_array($v)) $_POST[$k] = $this->db->real_escape_string($v); } extract($_POST);
 		$data = "";
+		
+		if(empty($id) && empty($form_token)){
+			$form_token = md5(uniqid());
+			$_POST['form_token'] = $form_token;
+		}
+
 		foreach($_POST as $k => $v){
 			if(!in_array($k, array('id')) && !is_numeric($k)){
+				// Convert to uppercase for consistency
+				$v_upper = strtoupper($v);
 				if(empty($data)){
-					$data .= " $k='$v' ";
+					$data .= " `$k`='$v_upper' ";
 				}else{
-					$data .= ", $k='$v' ";
+					$data .= ", `$k`='$v_upper' ";
 				}
 			}
 		}
-		$check = $this->db->query("SELECT * FROM student where id_no ='$id_no' ".(!empty($id) ? " and id != {$id} " : ''))->num_rows;
-		if($check > 0){
-			return 2;
-			exit;
-		}
+		
 		if(empty($id)){
 			$save = $this->db->query("INSERT INTO student set $data");
+			if($save){
+				$inserted_id = $this->db->insert_id;
+				
+				// WhatsApp Automation Logic (Bilingual)
+				if(is_feature_enabled('whatsapp_automation')){
+					if(!empty($whatsapp_number) && !empty($course_id)){
+						$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
+						$course_name = ($course_qry->num_rows > 0) ? $course_qry->fetch_assoc()['course'] : 'our course';
+						
+						$base_url = "http://dotcmc.ct.ws";
+						$link = $base_url . "/student_form.php?token=" . $form_token;
+						
+						$combined_msg = "*Greetings from DOT CMC Computer Education!*\n\nDear *" . ucwords(strtolower($name)) . "*,\nThank you for taking admission in *$course_name*.\n\n*DOT CMC कंप्यूटर एजुकेशन में आपका स्वागत है!*\n*$course_name* में एडमिशन लेने के लिए धन्यवाद।\n\nPlease submit your remaining details and documents securely by clicking the link below:\nकृपया अपनी बाकी की जानकारी और डाक्यूमेंट्स नीचे दी गई लिंक पर क्लिक करके सबमिट करें:\n\n👇 *Registration Link:*\n$link";
+						
+						$phone_esc = $this->db->real_escape_string($whatsapp_number);
+						$msg_esc = $this->db->real_escape_string($combined_msg);
+						
+						$this->db->query("INSERT INTO whatsapp_queue (phone, message) VALUES ('$phone_esc', '$msg_esc')");
+					}
+				}
+			}
 		}else{
 			$save = $this->db->query("UPDATE student set $data where id = $id");
 		}
+		
 		if($save)
 			return 1;
 	}
 	function delete_student(){
 		foreach($_POST as $k => $v){ if(!is_array($v)) $_POST[$k] = $this->db->real_escape_string($v); } extract($_POST);
+		
+		// Fetch file paths before deleting
+		$qry = $this->db->query("SELECT photo, marksheet FROM student WHERE id = ".$id);
+		if($qry->num_rows > 0) {
+			$row = $qry->fetch_assoc();
+			$photo = $row['photo'];
+			$marksheet = $row['marksheet'];
+			
+			// Get student directory path if photo exists
+			$student_dir = '';
+			if(!empty($photo) && file_exists($photo)){
+				$student_dir = dirname($photo);
+				@unlink($photo);
+			}
+			if(!empty($marksheet) && file_exists($marksheet)){
+				if(empty($student_dir)) $student_dir = dirname($marksheet);
+				@unlink($marksheet);
+			}
+			
+			// Remove the student's folder if it exists
+			if(!empty($student_dir) && is_dir($student_dir)){
+				// Ensure it's not deleting the base directory
+				if(strpos($student_dir, 'assets/uploads/students') !== false) {
+					@rmdir($student_dir); 
+				}
+			}
+		}
+
 		$delete = $this->db->query("DELETE FROM student where id = ".$id);
 		if($delete){
 			return 1;
+		}
+	}
+	function resend_link(){
+		foreach($_POST as $k => $v){ if(!is_array($v)) $_POST[$k] = $this->db->real_escape_string($v); } extract($_POST);
+		$new_token = md5(uniqid());
+		$update = $this->db->query("UPDATE student set form_token = '$new_token', form_submitted = 0 where id = $id");
+		if($update){
+			$stu_qry = $this->db->query("SELECT name, whatsapp_number, course_id FROM student WHERE id = $id");
+			if($stu_qry->num_rows > 0){
+				$stu_data = $stu_qry->fetch_assoc();
+				$name = $stu_data['name'];
+				$whatsapp_number = $stu_data['whatsapp_number'];
+				$course_id = $stu_data['course_id'];
+				if(is_feature_enabled('whatsapp_automation')){
+					if(!empty($whatsapp_number) && !empty($course_id)){
+						$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
+						$course_name = ($course_qry->num_rows > 0) ? $course_qry->fetch_assoc()['course'] : 'our course';
+						
+						$base_url = "http://dotcmc.ct.ws";
+						$link = $base_url . "/student_form.php?token=" . $new_token;
+						
+						$combined_msg = "*Greetings from DOT CMC Computer Education!*\n\nDear *" . ucwords(strtolower($name)) . "*,\nHere is your new registration link for *$course_name*.\n\n*DOT CMC कंप्यूटर एजुकेशन में आपका स्वागत है!*\n*$course_name* के लिए आपकी नई रजिस्ट्रेशन लिंक यहाँ है।\n\nPlease submit your remaining details and documents securely by clicking the link below:\nकृपया अपनी बाकी की जानकारी और डाक्यूमेंट्स नीचे दी गई लिंक पर क्लिक करके सबमिट करें:\n\n👇 *Registration Link:*\n$link";
+						
+						$phone_esc = $this->db->real_escape_string($whatsapp_number);
+						$msg_esc = $this->db->real_escape_string($combined_msg);
+						
+						$this->db->query("INSERT INTO whatsapp_queue (phone, message) VALUES ('$phone_esc', '$msg_esc')");
+					}
+				}
+			}
+			return 1;
+		} else {
+			return "Database Update Failed: " . $this->db->error;
 		}
 	}
 	function save_fees(){
@@ -532,14 +619,16 @@ Class Action {
 			$url1_esc = $this->db->real_escape_string($media_url1);
 			$url2_esc = $this->db->real_escape_string($media_url2);
 			
-			// Prevent duplicate clicks by checking if same phone got a message in the last 1 minute
-			$check_dup = $this->db->query("SELECT id FROM whatsapp_queue WHERE phone = '$phone_esc' AND status = 'pending' AND created_at >= NOW() - INTERVAL 1 MINUTE");
-			
-			if($check_dup->num_rows == 0) {
-				// Insert English message with media
-			    $this->db->query("INSERT INTO whatsapp_queue (phone, message, media_url1, media_url2) VALUES ('$phone_esc', '$msg_eng_esc', '$url1_esc', '$url2_esc')");
-			    // Insert Hindi message without media (so media is not sent twice)
-			    $this->db->query("INSERT INTO whatsapp_queue (phone, message, media_url1, media_url2) VALUES ('$phone_esc', '$msg_hin_esc', NULL, NULL)");
+			if(is_feature_enabled('whatsapp_automation')){
+				// Prevent duplicate clicks by checking if same phone got a message in the last 1 minute
+				$check_dup = $this->db->query("SELECT id FROM whatsapp_queue WHERE phone = '$phone_esc' AND status = 'pending' AND created_at >= NOW() - INTERVAL 1 MINUTE");
+				
+				if($check_dup->num_rows == 0) {
+					// Insert English message with media
+					$this->db->query("INSERT INTO whatsapp_queue (phone, message, media_url1, media_url2) VALUES ('$phone_esc', '$msg_eng_esc', '$url1_esc', '$url2_esc')");
+					// Insert Hindi message without media (so media is not sent twice)
+					$this->db->query("INSERT INTO whatsapp_queue (phone, message, media_url1, media_url2) VALUES ('$phone_esc', '$msg_hin_esc', NULL, NULL)");
+				}
 			}
 			
 			return 1;

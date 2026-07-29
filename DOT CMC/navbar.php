@@ -25,6 +25,7 @@
 				<a href="index.php?page=users" class="nav-item nav-users"><span class='icon-field'><i class="fa fa-users "></i></span> Users</a>
 				<!-- <a href="index.php?page=site_settings" class="nav-item nav-site_settings"><span class='icon-field'><i class="fa fa-cogs"></i></span> System Settings</a> -->
 			<?php endif; ?>
+				<a href="index.php?page=manage_storage" class="nav-item nav-manage_storage"><span class='icon-field'><i class="fa fa-cloud"></i></span> Manage Storage</a>
 		</div>
 
 </nav>

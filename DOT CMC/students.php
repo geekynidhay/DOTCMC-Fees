@@ -36,11 +36,12 @@
 						<table class="table table-condensed table-bordered table-hover">
 							<thead>
 								<tr>
-									<th class="text-center">#</th>
-									<th class="">ID No.</th>
-									<th class="">Name</th>
-									<th class="">Information</th>
-									<th class="text-center">Action</th>
+									<th class="text-center" width="5%">#</th>
+									<th class="" width="15%">Image</th>
+									<th class="" width="15%">Ledger No.</th>
+									<th class="" width="25%">Name</th>
+									<th class="" width="20%">Information</th>
+									<th class="text-center" width="20%">Action</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -51,6 +52,13 @@
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
+									<td class="text-center">
+										<?php if(!empty($row['photo'])): ?>
+											<img src="<?php echo $row['photo'] ?>" class="student-img" alt="Student Image">
+										<?php else: ?>
+											<span>No Image</span>
+										<?php endif; ?>
+									</td>
 									<td>
 										<p> <b><?php echo $row['id_no'] ?></b></p>
 									</td>
@@ -58,11 +66,13 @@
 										<p> <b><?php echo ucwords($row['name']) ?></b></p>
 									</td>
 									<td class="">
-										 <p><small>Email: <i><b><?php echo $row['email'] ?></i></small></p>
-										 <p><small>Contact #: <i><b><?php echo $row['contact'] ?></i></small></p>
-										 <p><small>Address: <i><b><?php echo $row['address'] ?></i></small></p>
+										 <p><small>WhatsApp: <i><b><?php echo $row['whatsapp_number'] ?></i></small></p>
+										 <p><small>Mobile: <i><b><?php echo $row['contact'] ?></i></small></p>
 									</td>
 									<td class="text-center">
+										<?php if(is_feature_enabled('whatsapp_automation')): ?>
+										<button class="btn btn-sm btn-outline-info resend_link" type="button" data-id="<?php echo $row['id'] ?>" title="Resend Link"><i class="fa fa-paper-plane"></i> Link</button>
+										<?php endif; ?>
 										<button class="btn btn-sm btn-outline-primary edit_student" type="button" data-id="<?php echo $row['id'] ?>" >Edit</button>
 										<button class="btn btn-sm btn-outline-danger delete_student" type="button" data-id="<?php echo $row['id'] ?>">Delete</button>
 									</td>
@@ -86,9 +96,12 @@
 	td p{
 		margin: unset
 	}
-	img{
-		max-width:100px;
-		max-height: :150px;
+	.student-img{
+		object-fit: cover;
+		width: 100px;
+		height: 130px;
+		border-radius: 5px;
+		border: 1px solid #ccc;
 	}
 </style>
 <script>
@@ -103,9 +116,36 @@
 		uni_modal("Manage Student  Details","manage_student.php?id="+$(this).attr('data-id'),"mid-large")
 		
 	})
+	$('.resend_link').click(function(){
+		_conf("Are you sure you want to generate a new registration link and send it via WhatsApp?","resend_link",[$(this).attr('data-id')])
+	})
 	$('.delete_student').click(function(){
 		_conf("Are you sure to delete this Student ?","delete_student",[$(this).attr('data-id')])
 	})
+	function resend_link($id){
+		start_load()
+		$.ajax({
+			url:'ajax.php?action=resend_link',
+			method:'POST',
+			data:{id:$id},
+			success:function(resp){
+				if(resp == 1 || resp.trim() == '1'){
+					alert_toast("Link resent successfully",'success')
+					setTimeout(function(){
+						location.reload()
+					},1500)
+				} else {
+					alert("Error: " + resp);
+					end_load();
+				}
+			},
+			error:function(err){
+				alert("AJAX Error");
+				console.log(err);
+				end_load();
+			}
+		})
+	}
 	function delete_student($id){
 		start_load()
 		$.ajax({

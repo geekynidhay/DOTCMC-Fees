@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ob_start();
 $action = $_GET['action'];
 include 'admin_class.php';
@@ -87,6 +90,11 @@ if($action == "delete_student"){
 	$delete = $crud->delete_student();
 	if($delete)
 		echo $delete;
+}
+if($action == "resend_link"){
+	$resend = $crud->resend_link();
+	if($resend)
+		echo $resend;
 }
 if($action == "save_fees"){
 	$save = $crud->save_fees();
