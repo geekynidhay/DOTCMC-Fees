@@ -8,6 +8,7 @@ if(!function_exists('is_feature_enabled')){
         // Code-driven feature flags config
         $feature_flags = [
             'whatsapp_automation' => true,
+            'dynamic_fee_dropdown' => true,
             // Add more features here as needed
         ];
         

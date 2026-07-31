@@ -33,41 +33,56 @@ foreach($qry->fetch_array() as $k => $val){
                 <option value="July" <?php echo isset($session) && $session == 'July' ? 'selected' : '' ?>>July</option>
             </select>
         </div>
-        <?php 
-        $current_course_name = '';
-        if(isset($course_id) && $course_id > 0){
-            $c_qry = $conn->query("SELECT course FROM courses WHERE id = $course_id");
-            if($c_qry && $c_qry->num_rows > 0){
-                $current_course_name = $c_qry->fetch_assoc()['course'];
+        <?php if(is_feature_enabled('dynamic_fee_dropdown')): ?>
+            <?php 
+            $current_course_name = '';
+            if(isset($course_id) && $course_id > 0){
+                $c_qry = $conn->query("SELECT course FROM courses WHERE id = $course_id");
+                if($c_qry && $c_qry->num_rows > 0){
+                    $current_course_name = $c_qry->fetch_assoc()['course'];
+                }
             }
-        }
-        ?>
-        <div class="form-group">
-            <label for="course_name_select" class="control-label">Course</label>
-            <select id="course_name_select" class="custom-select select2" required>
-                <option value=""></option>
-                <?php 
-                $course = $conn->query("SELECT DISTINCT course FROM courses order by course asc");
-                while($row=$course->fetch_assoc()):
-                ?>
-                <option value="<?php echo $row['course'] ?>" <?php echo $current_course_name == $row['course'] ? 'selected' : '' ?>><?php echo $row['course'] ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="course_id" class="control-label">Fee Package</label>
-            <select name="course_id" id="course_id" class="custom-select select2" required>
-                <option value=""></option>
-                <?php 
-                if($current_course_name != ''){
-                    $c_esc = $conn->real_escape_string($current_course_name);
-                    $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by level asc");
-                    while($row = $fees->fetch_assoc()):
-                ?>
-                <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['level'] . ' - ' . number_format($row['total_amount']) ?></option>
-                <?php endwhile; } ?>
-            </select>
-        </div>
+            ?>
+            <div class="form-group">
+                <label for="course_name_select" class="control-label">Course</label>
+                <select id="course_name_select" class="custom-select select2" required>
+                    <option value=""></option>
+                    <?php 
+                    $course = $conn->query("SELECT DISTINCT course FROM courses order by course asc");
+                    while($row=$course->fetch_assoc()):
+                    ?>
+                    <option value="<?php echo $row['course'] ?>" <?php echo $current_course_name == $row['course'] ? 'selected' : '' ?>><?php echo $row['course'] ?></option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="course_id" class="control-label">Fee Package</label>
+                <select name="course_id" id="course_id" class="custom-select select2" required>
+                    <option value=""></option>
+                    <?php 
+                    if($current_course_name != ''){
+                        $c_esc = $conn->real_escape_string($current_course_name);
+                        $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by level asc");
+                        while($row = $fees->fetch_assoc()):
+                    ?>
+                    <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['level'] . ' - ' . number_format($row['total_amount']) ?></option>
+                    <?php endwhile; } ?>
+                </select>
+            </div>
+        <?php else: ?>
+            <div class="form-group">
+                <label for="" class="control-label">Course</label>
+                <select name="course_id" id="course_id" class="custom-select select2" required>
+                    <option value=""></option>
+                    <?php 
+                    $course = $conn->query("SELECT * FROM courses order by course asc");
+                    while($row=$course->fetch_assoc()):
+                    ?>
+                    <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['course'] . " - " . $row['level'] ?></option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+        <?php endif; ?>
         <div class="form-group">
             <label for="" class="control-label">Name</label>
             <input type="text" class="form-control" name="name"  value="<?php echo isset($name) ? $name :'' ?>">
@@ -130,6 +145,7 @@ foreach($qry->fetch_array() as $k => $val){
         width:'100%'
     })
 
+<?php if(is_feature_enabled('dynamic_fee_dropdown')): ?>
     $('#course_name_select').change(function(){
         start_load()
         $.ajax({
@@ -149,4 +165,5 @@ foreach($qry->fetch_array() as $k => $val){
             }
         })
     })
+<?php endif; ?>
 </script>
