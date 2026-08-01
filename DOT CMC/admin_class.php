@@ -657,7 +657,7 @@ Class Action {
 				$name = ucwords($row['name']);
 				$phone = $row['whatsapp_number'];
 				if(!empty($phone)){
-					$msg = "Hi $name, this is to inform you that your fee for the current month is pending. Kindly submit your fee as soon as possible. If already paid, please ignore this message. - DOT CMC\n\nHi $name, यह सूचित किया जाता है कि आपके इस महीने की फीस जमा नहीं हुई है। कृपया जल्द से जल्द अपनी फीस जमा करें। यदि आपने पहले ही भुगतान कर दिया है तो कृपया इस संदेश को अनदेखा करें। - DOT CMC";
+					$msg = "Hi $name, this is to inform you that your fee for the current month is pending. Kindly submit your fee as soon as possible. If already paid, please ignore this message.\n\nHi $name, यह सूचित किया जाता है कि आपके इस महीने की फीस जमा नहीं हुई है। कृपया जल्द से जल्द अपनी फीस जमा करें। यदि आपने पहले ही भुगतान कर दिया है तो कृपया इस संदेश को अनदेखा करें।\n\n- DOT CMC Computer";
 					$phone_esc = $this->db->real_escape_string($phone);
 					$msg_esc = $this->db->real_escape_string($msg);
 					// Insert to queue
