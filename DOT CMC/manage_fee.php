@@ -55,7 +55,7 @@ if(isset($_GET['id'])){
                 <?php 
                 if($current_course_name != ''){
                     $c_esc = $conn->real_escape_string($current_course_name);
-                    $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by level asc");
+                    $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by total_amount asc");
                     while($row = $fees->fetch_assoc()):
                 ?>
                 <option value="<?php echo $row['id'] ?>" data-amount="<?php echo $row['total_amount'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo number_format($row['total_amount']) ?></option>
