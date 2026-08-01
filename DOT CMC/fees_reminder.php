@@ -43,7 +43,8 @@
 							</div>
 							<div class="col-md-8 text-right">
 								<div class="form-group" style="margin-top: 30px;">
-									<button class="btn btn-primary" id="send_reminders"><i class="fa fa-paper-plane"></i> Send WhatsApp Reminder</button>
+									<button class="btn btn-success" id="send_all"><i class="fa fa-paper-plane"></i> Message All (This Session)</button>
+									<button class="btn btn-danger" id="send_unpaid"><i class="fa fa-paper-plane"></i> Message Unpaid Only</button>
 								</div>
 							</div>
 						</div>
@@ -51,10 +52,8 @@
 						<table class="table table-condensed table-bordered table-hover" id="reminder-table">
 							<thead>
 								<tr>
-									<th class="text-center">
-										<div class="form-check">
-										  <input class="form-check-input" type="checkbox" id="selectAll">
-										</div>
+									<th class="text-center align-middle" style="vertical-align: middle;">
+										<input type="checkbox" id="selectAll" style="margin:0;">
 									</th>
 									<th class="text-center">#</th>
 									<th class="">ID No.</th>
@@ -98,10 +97,8 @@
 									$status_badge = $paid_this_month ? '<span class="badge badge-success">Fees Paid for this month</span>' : '<span class="badge badge-danger">Not Paid</span>';
 								?>
 								<tr data-session="<?php echo $row['full_session'] ?>" style="display: none;" class="student-row">
-									<td class="text-center">
-										<div class="form-check">
-										  <input class="form-check-input student-checkbox" type="checkbox" value="<?php echo $row['id'] ?>" data-paid="<?php echo $paid_this_month ? '1' : '0' ?>" <?php echo $paid_this_month ? 'disabled' : '' ?>>
-										</div>
+									<td class="text-center align-middle" style="vertical-align: middle;">
+										<input type="checkbox" class="student-checkbox" value="<?php echo $row['id'] ?>" data-paid="<?php echo $paid_this_month ? '1' : '0' ?>" style="margin:0;">
 									</td>
 									<td class="text-center"><?php echo $i++ ?></td>
 									<td>
@@ -160,24 +157,16 @@
 			var selected_session = $('#session_filter').val();
 			
 			if(selected_session != '') {
-				// Only select visible ones that are NOT paid
-				$('.student-row[data-session="'+selected_session+'"] .student-checkbox').not(':disabled').prop('checked', isChecked);
+				$('.student-row[data-session="'+selected_session+'"] .student-checkbox').prop('checked', isChecked);
 			}
 		})
 
-		// Send Reminders
-		$('#send_reminders').click(function(){
-			var selected_ids = [];
-			$('.student-checkbox:checked').not(':disabled').each(function(){
-				selected_ids.push($(this).val());
-			});
-
+		function sendAjax(selected_ids) {
 			if(selected_ids.length == 0){
-				alert_toast("Please select at least one student who hasn't paid.", 'warning');
+				alert_toast("Please select at least one student.", 'warning');
 				return false;
 			}
-
-			start_load()
+			start_load();
 			$.ajax({
 				url:'ajax.php?action=send_fee_reminders',
 				method:'POST',
@@ -193,7 +182,29 @@
 						end_load();
 					}
 				}
-			})
-		})
+			});
+		}
+
+		$('#send_all').click(function(){
+			var selected_ids = [];
+			$('.student-checkbox:checked').each(function(){
+				selected_ids.push($(this).val());
+			});
+			sendAjax(selected_ids);
+		});
+
+		$('#send_unpaid').click(function(){
+			var selected_ids = [];
+			$('.student-checkbox:checked').each(function(){
+				if($(this).attr('data-paid') == '0') {
+					selected_ids.push($(this).val());
+				}
+			});
+			if(selected_ids.length == 0) {
+			    alert_toast("No unpaid students selected.", 'warning');
+			    return false;
+			}
+			sendAjax(selected_ids);
+		});
 	})
 </script>
