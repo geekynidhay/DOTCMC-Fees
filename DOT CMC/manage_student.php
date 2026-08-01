@@ -9,53 +9,19 @@ foreach($qry->fetch_array() as $k => $val){
 ?>
 <div class="container-fluid">
     <form action="" id="manage-student">
-        <style>
-            #manage-student input[type="text"], 
-            #manage-student input[type="email"], 
-            #manage-student textarea {
-                text-transform: uppercase;
-            }
-        </style>
         <input type="hidden" name="id" value="<?php echo isset($id) ? $id : '' ?>">
         <div id="msg" class="form-group"></div>
         <div class="form-group">
-            <label for="" class="control-label">Ledger Number</label>
+            <label for="" class="control-label">Id No.</label>
             <input type="text" class="form-control" name="id_no"  value="<?php echo isset($id_no) ? $id_no :'' ?>" required>
         </div>
         <div class="form-group">
-            <label for="" class="control-label">Year</label>
-            <input type="number" class="form-control" name="year"  value="<?php echo isset($year) ? $year : date('Y') ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="" class="control-label">Session</label>
-            <select name="session" id="session" class="custom-select" required>
-                <option value="January" <?php echo isset($session) && $session == 'January' ? 'selected' : '' ?>>January</option>
-                <option value="July" <?php echo isset($session) && $session == 'July' ? 'selected' : '' ?>>July</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="" class="control-label">Course</label>
-            <select name="course_id" id="course_id" class="custom-select select2" required>
-                <option value=""></option>
-                <?php 
-                $course = $conn->query("SELECT * FROM courses order by course asc");
-                while($row=$course->fetch_assoc()):
-                ?>
-                <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['course'] . " - " . $row['level'] ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="form-group">
             <label for="" class="control-label">Name</label>
-            <input type="text" class="form-control" name="name"  value="<?php echo isset($name) ? $name :'' ?>">
+            <input type="text" class="form-control" name="name"  value="<?php echo isset($name) ? $name :'' ?>" required>
         </div>
         <div class="form-group">
-            <label for="" class="control-label">Father's Name</label>
-            <input type="text" class="form-control" name="father_name"  value="<?php echo isset($father_name) ? $father_name :'' ?>">
-        </div>
-        <div class="form-group">
-            <label for="" class="control-label">Mobile Number</label>
-            <input type="text" class="form-control" name="contact"  value="<?php echo isset($contact) ? $contact :'' ?>">
+            <label for="" class="control-label">Contact</label>
+            <input type="text" class="form-control" name="contact"  value="<?php echo isset($contact) ? $contact :'' ?>" required>
         </div>
         <div class="form-group">
             <label for="" class="control-label">WhatsApp Number</label>
@@ -63,11 +29,11 @@ foreach($qry->fetch_array() as $k => $val){
         </div>
         <div class="form-group">
             <label for="" class="control-label">Email</label>
-            <input type="email" class="form-control" name="email"  value="<?php echo isset($email) ? $email :'' ?>">
+            <input type="email" class="form-control" name="email"  value="<?php echo isset($email) ? $email :'' ?>" required>
         </div>
         <div class="form-group">
             <label for="" class="control-label">Address</label>
-            <textarea name="address" id="" cols="30" rows="3" class="form-control"><?php echo isset($address) ? $address :'' ?></textarea>
+            <textarea name="address" id="" cols="30" rows="3" class="form-control" required=""><?php echo isset($address) ? $address :'' ?></textarea>
         </div>
     </form>
 </div>
