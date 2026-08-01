@@ -49,7 +49,7 @@ if(isset($_GET['id'])){
             </select>
         </div>
         <div class="form-group">
-            <label for="course_id" class="control-label">Fee Package</label>
+            <label for="course_id" class="control-label">Fee</label>
             <select name="course_id" id="course_id" class="custom-select select2" required>
                 <option value=""></option>
                 <?php 
@@ -62,10 +62,7 @@ if(isset($_GET['id'])){
                 <?php endwhile; } ?>
             </select>
         </div>
-		 <div class="form-group">
-            <label for="" class="control-label">Fee</label>
-            <input type="text" class="form-control text-right" name="total_fee"  value="<?php echo isset($total_fee) ? number_format($total_fee) :'' ?>" required readonly>
-        </div>
+        <input type="hidden" name="total_fee" value="<?php echo isset($total_fee) ? $total_fee : '' ?>">
 	</form>
 </div>
 <script>
@@ -112,7 +109,7 @@ if(isset($_GET['id'])){
 		var selected_opt = $('#course_id option[value="'+$(this).val()+'"]');
 		var amount = selected_opt.attr('data-amount');
 		if(amount !== undefined && amount !== ''){
-			$('[name="total_fee"]').val(parseFloat(amount).toLocaleString('en-US',{style:'decimal',maximumFractionDigits:2,minimumFractionDigits:2}))
+			$('[name="total_fee"]').val(amount)
 		} else {
 			$('[name="total_fee"]').val('')
 		}
