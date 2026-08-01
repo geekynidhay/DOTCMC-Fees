@@ -644,4 +644,28 @@ Class Action {
 		}
 		return json_encode($data);
 	}
+	function send_fee_reminders(){
+		extract($_POST);
+		if(!isset($student_ids) || empty($student_ids)){
+			return 0;
+		}
+		
+		if(is_feature_enabled('whatsapp_automation')){
+			$ids = implode(',', array_map('intval', $student_ids));
+			$qry = $this->db->query("SELECT name, whatsapp_number FROM student WHERE id IN ($ids)");
+			while($row = $qry->fetch_assoc()){
+				$name = ucwords($row['name']);
+				$phone = $row['whatsapp_number'];
+				if(!empty($phone)){
+					$msg = "Dear $name, this is a gentle reminder that your fees for the current month are due. Please ignore if already paid. - DOT CMC\n\nप्रिय $name, यह एक याद दिलाने वाला संदेश है कि आपके इस महीने की फीस पेंडिंग है। यदि आपने भुगतान कर दिया है तो कृपया इसे अनदेखा करें। - DOT CMC";
+					$phone_esc = $this->db->real_escape_string($phone);
+					$msg_esc = $this->db->real_escape_string($msg);
+					// Insert to queue
+					$this->db->query("INSERT INTO whatsapp_queue (phone, message) VALUES ('$phone_esc', '$msg_esc')");
+				}
+			}
+			return 1;
+		}
+		return 1;
+	}
 }

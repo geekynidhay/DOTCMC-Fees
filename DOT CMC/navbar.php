@@ -17,6 +17,7 @@
 				<div class="mx-2 text-white mt-3 mb-1" style="font-size: 0.85rem; opacity: 0.7;">Master List</div>
 				<a href="index.php?page=courses" class="nav-item nav-courses" style="font-size: 1.0rem;"><span class='icon-field'><i class="fa fa-scroll "></i></span> Courses & Fees</a>
 				<a href="index.php?page=students" class="nav-item nav-students" style="font-size: 1.0rem;"><span class='icon-field'><i class="fa fa-users "></i></span> Students</a>
+				<a href="index.php?page=fees_reminder" class="nav-item nav-fees_reminder" style="font-size: 1.0rem;"><span class='icon-field'><i class="fa fa-bell "></i></span> Fees Reminder</a>
 				<div class="mx-2 text-white mt-3 mb-1" style="font-size: 0.85rem; opacity: 0.7;">Report</div>
 				<a href="index.php?page=payments_report" class="nav-item nav-payments_report"><span class='icon-field'><i class="fa fa-th-list"></i></span> Payments Report</a>
 				<a href="index.php?page=expenses" class="nav-item nav-expenses"><span class='icon-field'><i class="fa fa-chart-bar"></i></span> Business Expenses</a>

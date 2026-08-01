@@ -118,5 +118,10 @@ if($action == "get_course_fees"){
 	if($get)
 		echo $get;
 }
+if($action == "send_fee_reminders"){
+	$save = $crud->send_fee_reminders();
+	if($save)
+		echo $save;
+}
 ob_end_flush();
 ?>
