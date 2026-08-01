@@ -20,10 +20,6 @@ foreach($qry->fetch_array() as $k => $val){
                 <input type="text" class="form-control" name="course"  value="<?php echo isset($course) ? $course :'' ?>" required>
             </div>
             <div class="form-group">
-                <label for="" class="control-label">Level</label>
-                <input type="text" class="form-control" name="level"  value="<?php echo isset($level) ? $level :'' ?>" required>
-            </div>
-            <div class="form-group">
                 <label for="" class="control-label">Description</label>
                 <textarea name="description" id="" cols="30" rows="4" class="form-control" required=""><?php echo isset($description) ? $description :'' ?></textarea>
             </div>
@@ -169,7 +165,7 @@ foreach($qry->fetch_array() as $k => $val){
                             location.reload()
                         },1000)
                 }else if(resp == 2){
-                $('#msg').html('<div class="alert alert-danger mx-2">Course Name & Level already exist.</div>')
+                $('#msg').html('<div class="alert alert-danger mx-2">Course with this fee already exists.</div>')
                 end_load()
                 }   
             }

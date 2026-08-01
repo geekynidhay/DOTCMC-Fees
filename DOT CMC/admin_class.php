@@ -200,7 +200,7 @@ Class Action {
 				}
 			}
 		}
-		$check = $this->db->query("SELECT * FROM courses where course ='$course' and level ='$level' ".(!empty($id) ? " and id != {$id} " : ''))->num_rows;
+		$check = $this->db->query("SELECT * FROM courses where course ='$course' and total_amount ='$total_amount' ".(!empty($id) ? " and id != {$id} " : ''))->num_rows;
 		if($check > 0){
 			return 2;
 			exit;
@@ -274,14 +274,9 @@ Class Action {
 				
 				// WhatsApp Automation Logic (Bilingual)
 				if(is_feature_enabled('whatsapp_automation')){
-					if(!empty($whatsapp_number)){
-						$course_name = 'our institute';
-						if(!empty($course_id)){
-							$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
-							if($course_qry && $course_qry->num_rows > 0) {
-								$course_name = $course_qry->fetch_assoc()['course'];
-							}
-						}
+					if(!empty($whatsapp_number) && !empty($course_id)){
+						$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
+						$course_name = ($course_qry->num_rows > 0) ? $course_qry->fetch_assoc()['course'] : 'our course';
 						
 						$base_url = "http://dotcmc.ct.ws";
 						$link = $base_url . "/student_form.php?token=" . $form_token;
@@ -349,14 +344,9 @@ Class Action {
 				$whatsapp_number = $stu_data['whatsapp_number'];
 				$course_id = $stu_data['course_id'];
 				if(is_feature_enabled('whatsapp_automation')){
-					if(!empty($whatsapp_number)){
-						$course_name = 'our institute';
-						if(!empty($course_id)){
-							$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
-							if($course_qry && $course_qry->num_rows > 0) {
-								$course_name = $course_qry->fetch_assoc()['course'];
-							}
-						}
+					if(!empty($whatsapp_number) && !empty($course_id)){
+						$course_qry = $this->db->query("SELECT course FROM courses WHERE id = $course_id");
+						$course_name = ($course_qry->num_rows > 0) ? $course_qry->fetch_assoc()['course'] : 'our course';
 						
 						$base_url = "http://dotcmc.ct.ws";
 						$link = $base_url . "/student_form.php?token=" . $new_token;

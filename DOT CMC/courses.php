@@ -38,7 +38,7 @@
 							<thead>
 								<tr>
 									<th class="text-center">#</th>
-									<th class="">Course/Level</th>
+									<th class="">Course</th>
 									<th class="">Description</th>
 									<th class="">Total Fee</th>
 									<th class="text-center">Action</th>
@@ -53,7 +53,7 @@
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
 									<td>
-										<p> <b><?php echo $row['course'] . (!empty(trim($row['level'])) ? " - " . $row['level'] : '') ?></b></p>
+										<p> <b><?php echo $row['course'] ?></b></p>
 									</td>
 									<td class="">
 										 <p><small><i><b><?php echo $row['description'] ?></i></small></p>
