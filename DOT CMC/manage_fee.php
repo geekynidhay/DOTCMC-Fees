@@ -58,7 +58,7 @@ if(isset($_GET['id'])){
                     $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by level asc");
                     while($row = $fees->fetch_assoc()):
                 ?>
-                <option value="<?php echo $row['id'] ?>" data-amount="<?php echo $row['total_amount'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['level'] . ' - ' . number_format($row['total_amount']) ?></option>
+                <option value="<?php echo $row['id'] ?>" data-amount="<?php echo $row['total_amount'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo number_format($row['total_amount']) ?></option>
                 <?php endwhile; } ?>
             </select>
         </div>
@@ -67,7 +67,7 @@ if(isset($_GET['id'])){
 </div>
 <script>
     var all_courses_data = <?php 
-        $all_c = $conn->query("SELECT * FROM courses ORDER BY level ASC");
+        $all_c = $conn->query("SELECT * FROM courses ORDER BY total_amount ASC");
         $c_data = array();
         if($all_c){
             while($r = $all_c->fetch_assoc()){
@@ -90,8 +90,7 @@ if(isset($_GET['id'])){
             });
             matched.forEach(function(item){
                 var amt = parseFloat(item.total_amount).toLocaleString('en-US');
-                var label = (item.level && item.level.trim() !== '') ? (item.level + ' - ' + amt) : amt;
-                opt += '<option value="' + item.id + '" data-amount="' + item.total_amount + '">' + label + '</option>';
+                opt += '<option value="' + item.id + '" data-amount="' + item.total_amount + '">' + amt + '</option>';
             });
         }
         $('#course_id').html(opt).trigger('change');

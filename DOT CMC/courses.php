@@ -53,7 +53,7 @@
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
 									<td>
-										<p> <b><?php echo $row['course'] . " - " . $row['level'] ?></b></p>
+										<p> <b><?php echo $row['course'] . (!empty(trim($row['level'])) ? " - " . $row['level'] : '') ?></b></p>
 									</td>
 									<td class="">
 										 <p><small><i><b><?php echo $row['description'] ?></i></small></p>
