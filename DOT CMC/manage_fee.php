@@ -86,7 +86,7 @@ if(isset($_GET['id'])){
                     data.forEach(function(item){
                         opt += '<option value="'+item.id+'" data-amount="'+item.total_amount+'">'+item.level+' - '+parseFloat(item.total_amount).toLocaleString('en-US')+'</option>'
                     })
-                    $('#course_id').html(opt)
+                    $('#course_id').html(opt).trigger('change')
 					$('[name="total_fee"]').val('')
                 }
                 end_load()
