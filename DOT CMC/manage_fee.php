@@ -66,43 +66,36 @@ if(isset($_GET['id'])){
 	</form>
 </div>
 <script>
+    var all_courses_data = <?php 
+        $all_c = $conn->query("SELECT * FROM courses ORDER BY level ASC");
+        $c_data = array();
+        if($all_c){
+            while($r = $all_c->fetch_assoc()){
+                $c_data[] = $r;
+            }
+        }
+        echo json_encode($c_data);
+    ?>;
+
 	$('.select2').select2({
 		placeholder:'Please select here',
 		width:'100%'
 	})
 	$('#course_name_select').change(function(){
-        start_load()
-        $.ajax({
-            url:'ajax.php?action=get_course_fees',
-            method:'POST',
-            data:{course_name: $(this).val()},
-            success:function(resp){
-                if(resp){
-                    try {
-                        var startIndex = resp.indexOf('[');
-                        var endIndex = resp.lastIndexOf(']');
-                        if(startIndex !== -1 && endIndex !== -1) {
-                            var cleanJson = resp.substring(startIndex, endIndex + 1);
-                            var data = JSON.parse(cleanJson);
-                            var opt = '<option value=""></option>';
-                            data.forEach(function(item){
-                                opt += '<option value="'+item.id+'" data-amount="'+item.total_amount+'">'+item.level+' - '+parseFloat(item.total_amount).toLocaleString('en-US')+'</option>'
-                            })
-                            $('#course_id').html(opt).trigger('change')
-                            $('[name="total_fee"]').val('')
-                        }
-                    } catch(e) {
-                        console.error("JSON Parse Error: ", e);
-                        console.error("Response was: ", resp);
-                    }
-                }
-                end_load()
-            },
-            error: function(err){
-                console.error("AJAX Error: ", err);
-                end_load();
-            }
-        })
+        var selected_course = $(this).val();
+        var opt = '<option value=""></option>';
+        if(selected_course){
+            var matched = all_courses_data.filter(function(item){
+                return item.course === selected_course;
+            });
+            matched.forEach(function(item){
+                var amt = parseFloat(item.total_amount).toLocaleString('en-US');
+                var label = (item.level && item.level.trim() !== '') ? (item.level + ' - ' + amt) : amt;
+                opt += '<option value="' + item.id + '" data-amount="' + item.total_amount + '">' + label + '</option>';
+            });
+        }
+        $('#course_id').html(opt).trigger('change');
+        $('[name="total_fee"]').val('');
     })
 
 	$('#course_id').change(function(){
