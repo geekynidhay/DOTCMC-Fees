@@ -81,15 +81,24 @@ if(isset($_GET['id'])){
             data:{course_name: $(this).val()},
             success:function(resp){
                 if(resp){
-                    var data = JSON.parse(resp)
-                    var opt = '<option value=""></option>';
-                    data.forEach(function(item){
-                        opt += '<option value="'+item.id+'" data-amount="'+item.total_amount+'">'+item.level+' - '+parseFloat(item.total_amount).toLocaleString('en-US')+'</option>'
-                    })
-                    $('#course_id').html(opt).trigger('change')
-					$('[name="total_fee"]').val('')
+                    try {
+                        var data = JSON.parse(resp)
+                        var opt = '<option value=""></option>';
+                        data.forEach(function(item){
+                            opt += '<option value="'+item.id+'" data-amount="'+item.total_amount+'">'+item.level+' - '+parseFloat(item.total_amount).toLocaleString('en-US')+'</option>'
+                        })
+                        $('#course_id').html(opt).trigger('change')
+                        $('[name="total_fee"]').val('')
+                    } catch(e) {
+                        console.error("JSON Parse Error: ", e);
+                        console.error("Response was: ", resp);
+                    }
                 }
                 end_load()
+            },
+            error: function(err){
+                console.error("AJAX Error: ", err);
+                end_load();
             }
         })
     })

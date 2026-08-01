@@ -33,39 +33,17 @@ foreach($qry->fetch_array() as $k => $val){
                 <option value="July" <?php echo isset($session) && $session == 'July' ? 'selected' : '' ?>>July</option>
             </select>
         </div>
-        <?php 
-        $current_course_name = '';
-        if(isset($course_id) && $course_id > 0){
-            $c_qry = $conn->query("SELECT course FROM courses WHERE id = $course_id");
-            if($c_qry && $c_qry->num_rows > 0){
-                $current_course_name = $c_qry->fetch_assoc()['course'];
-            }
-        }
-        ?>
         <div class="form-group">
-            <label for="course_name_select" class="control-label">Course</label>
-            <select id="course_name_select" class="custom-select select2" required>
-                <option value=""></option>
-                <?php 
-                $course = $conn->query("SELECT DISTINCT course FROM courses order by course asc");
-                while($row=$course->fetch_assoc()):
-                ?>
-                <option value="<?php echo $row['course'] ?>" <?php echo $current_course_name == $row['course'] ? 'selected' : '' ?>><?php echo $row['course'] ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="course_id" class="control-label">Fee Package</label>
+            <label for="course_id" class="control-label">Course</label>
             <select name="course_id" id="course_id" class="custom-select select2" required>
                 <option value=""></option>
                 <?php 
-                if($current_course_name != ''){
-                    $c_esc = $conn->real_escape_string($current_course_name);
-                    $fees = $conn->query("SELECT * FROM courses WHERE course = '$c_esc' order by level asc");
-                    while($row = $fees->fetch_assoc()):
+                // Group by course to only get unique courses, and we just use MIN(id) as the course_id representing it
+                $course_qry = $conn->query("SELECT MIN(id) as id, course FROM courses GROUP BY course order by course asc");
+                while($row=$course_qry->fetch_assoc()):
                 ?>
-                <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['level'] . ' - ' . number_format($row['total_amount']) ?></option>
-                <?php endwhile; } ?>
+                <option value="<?php echo $row['id'] ?>" <?php echo isset($course_id) && $course_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['course'] ?></option>
+                <?php endwhile; ?>
             </select>
         </div>
         <div class="form-group">
@@ -128,25 +106,5 @@ foreach($qry->fetch_array() as $k => $val){
     $('.select2').select2({
         placeholder:"Please Select here",
         width:'100%'
-    })
-
-    $('#course_name_select').change(function(){
-        start_load()
-        $.ajax({
-            url:'ajax.php?action=get_course_fees',
-            method:'POST',
-            data:{course_name: $(this).val()},
-            success:function(resp){
-                if(resp){
-                    var data = JSON.parse(resp)
-                    var opt = '<option value=""></option>';
-                    data.forEach(function(item){
-                        opt += '<option value="'+item.id+'">'+item.level+' - '+parseFloat(item.total_amount).toLocaleString('en-US')+'</option>'
-                    })
-                    $('#course_id').html(opt).trigger('change')
-                }
-                end_load()
-            }
-        })
     })
 </script>
