@@ -668,4 +668,25 @@ Class Action {
 		}
 		return 1;
 	}
+	function send_custom_message(){
+		extract($_POST);
+		if(!isset($student_ids) || empty($student_ids) || empty($message)){
+			return 0;
+		}
+		
+		if(is_feature_enabled('whatsapp_automation')){
+			$ids = implode(',', array_map('intval', $student_ids));
+			$qry = $this->db->query("SELECT name, whatsapp_number FROM student WHERE id IN ($ids)");
+			while($row = $qry->fetch_assoc()){
+				$phone = $row['whatsapp_number'];
+				if(!empty($phone)){
+					$phone_esc = $this->db->real_escape_string($phone);
+					$msg_esc = $this->db->real_escape_string($message);
+					$this->db->query("INSERT INTO whatsapp_queue (phone, message) VALUES ('$phone_esc', '$msg_esc')");
+				}
+			}
+			return 1;
+		}
+		return 1;
+	}
 }

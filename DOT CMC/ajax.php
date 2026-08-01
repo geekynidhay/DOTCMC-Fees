@@ -123,5 +123,10 @@ if($action == "send_fee_reminders"){
 	if($save)
 		echo $save;
 }
+if($action == "send_custom_message"){
+	$save = $crud->send_custom_message();
+	if($save)
+		echo $save;
+}
 ob_end_flush();
 ?>

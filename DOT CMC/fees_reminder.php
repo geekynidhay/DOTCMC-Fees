@@ -43,6 +43,7 @@
 							</div>
 							<div class="col-md-8 text-right">
 								<div class="form-group" style="margin-top: 30px;">
+									<button class="btn btn-info" id="send_custom"><i class="fa fa-comment-dots"></i> Custom Message</button>
 									<button class="btn btn-success" id="send_all"><i class="fa fa-paper-plane"></i> Message All (This Session)</button>
 									<button class="btn btn-danger" id="send_unpaid"><i class="fa fa-paper-plane"></i> Message Unpaid Only</button>
 								</div>
@@ -126,6 +127,31 @@
 			</div>
 		</div>
 	</div>
+	</div>
+</div>
+
+<!-- Custom Message Modal -->
+<div class="modal fade" id="customMessageModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Send Custom Message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+			<label class="control-label">Message Content</label>
+			<textarea id="custom_message_text" class="form-control" rows="6" placeholder="Type your message here..."></textarea>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="submit_custom_message">Send Message</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -205,6 +231,48 @@
 			    return false;
 			}
 			sendAjax(selected_ids);
+		});
+
+		// Custom Message Logic
+		var custom_selected_ids = [];
+		$('#send_custom').click(function(){
+			custom_selected_ids = [];
+			$('.student-checkbox:checked').each(function(){
+				custom_selected_ids.push($(this).val());
+			});
+			if(custom_selected_ids.length == 0) {
+			    alert_toast("Please select at least one student to send a custom message.", 'warning');
+			    return false;
+			}
+			$('#custom_message_text').val('');
+			$('#customMessageModal').modal('show');
+		});
+
+		$('#submit_custom_message').click(function(){
+			var msg = $('#custom_message_text').val().trim();
+			if(msg == '') {
+				alert_toast("Please type a message first.", 'warning');
+				return false;
+			}
+
+			start_load();
+			$.ajax({
+				url:'ajax.php?action=send_custom_message',
+				method:'POST',
+				data: {student_ids: custom_selected_ids, message: msg},
+				success:function(resp){
+					if(resp == 1){
+						alert_toast("Custom messages queued successfully.",'success')
+						$('#customMessageModal').modal('hide');
+						setTimeout(function(){
+							location.reload()
+						}, 1500)
+					}else{
+						alert_toast("An error occurred.", 'danger');
+						end_load();
+					}
+				}
+			});
 		});
 	})
 </script>
