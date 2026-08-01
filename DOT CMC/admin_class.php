@@ -637,7 +637,7 @@ Class Action {
 	function get_course_fees(){
 		extract($_POST);
 		$course = $this->db->real_escape_string($course_name);
-		$qry = $this->db->query("SELECT * FROM courses where course = '$course' order by level asc");
+		$qry = $this->db->query("SELECT * FROM courses where course = '$course' order by total_amount asc");
 		$data = array();
 		while($row = $qry->fetch_assoc()){
 			$data[] = $row;
